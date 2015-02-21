@@ -1,48 +1,31 @@
 package pydictionary;
-import java.net.*;
-import java.io.*;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
 
 /*
  * Make a HTTP GET request and find out response code
  */
-public class request {
-	private String link;
+
+public class request extends requestsBase{
 	public request (String url){
-		this.link = url;
+		super(url);
 		
 	}
 	public static void main(String[] args) throws Exception{
-		request t = new request("http://pydictionary-geekpradd.rhcloud.com/api/synonym/sporadic");
-		t.makeGET();
-		System.out.println("All right");
-	}
-	private void makeGET() throws Exception {
-		URL obj = new URL(this.link);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		//Caste connection to needed type
-		con.setRequestMethod("GET");
-		int response = con.getResponseCode();
-		System.out.println("HTTP response code: " + response);
-		//Let's read the content now
-		BufferedReader read = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		//Reads the request data into a buffer
-		String line;
-		StringBuffer r = new StringBuffer();
-		//This is a buffer.. We append our strings to it and get a new string
-		while ((line = read.readLine())!=null){
-			r.append(line);
-		}
-		String jsonasString = r.toString();
-		JSONParser parser = new JSONParser();
-		JSONArray mysynonyms = (JSONArray) parser.parse(jsonasString);
+		request obj = new request("http://pydictionary-geekpradd.rhcloud.com/api/synonym/general");
+		JSONArray syn = obj.getSynonyms();
+		//Iterate over List
 		System.out.println("Synonyms are: ");
-		for (int i=0; i<mysynonyms.size();i++){
-			System.out.print(mysynonyms.get(i) + ", ");
+		for (int i=0;i<syn.size();i++){
+			System.out.print(syn.get(i)+", ");
 		}
+	}
+	public JSONArray getSynonyms() throws Exception {
+		
+		String jsonasString = this.returnHandledOutput();
+		JSONParser parser = new JSONParser();
+		JSONArray synonyms = (JSONArray) parser.parse(jsonasString);
+		return synonyms;
 	}
 }
 
